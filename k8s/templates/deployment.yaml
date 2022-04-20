@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: {{ .Chart.Name }}
+    run: backend
+  name: {{ .Chart.Name }}
+  namespace: {{ .Values.namespace }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}-backend
+      run: backend
+  replicas: {{ .Values.backend.replicaCount }}
+  revisionHistoryLimit: {{ .Values.backend.historyLimitReplicas }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1        
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: {{ .Chart.Name }}-backend
+        run: backend
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          imagePullPolicy: {{ .Values.backend.image.pullPolicy }}
+          image: {{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag }}
+          #ports:
+          #  - containerPort: {{ .Values.backend.service.data.target_port }}
+          resources:
+{{ toYaml .Values.backend.resources | indent 12 }}
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always

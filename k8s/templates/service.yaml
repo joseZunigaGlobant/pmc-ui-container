@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+    name: {{ .Chart.Name }}-svc
+    labels:
+      run: backend
+      type: {{ .Values.backend.service.data.type }}
+spec:
+    ports:
+    -   port: {{ .Values.backend.service.data.port }}
+        protocol: {{ .Values.backend.service.data.protocol }}
+        targetPort: {{ .Values.backend.service.data.target_port }}
+        name: {{ .Values.backend.service.data.name }}
+    selector:
+        app: {{ .Chart.Name }}-backend
+    

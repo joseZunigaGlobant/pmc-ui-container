@@ -1,0 +1,30 @@
+environment: main
+service_name: react-microfrontend
+namespace: backend
+
+hpa:
+  minReplicas: 1
+  maxReplicas: 1
+
+backend:
+  image:
+    repository: "from backstage"
+    tag: "from_cd"
+    pullPolicy: Always
+
+  replicaCount: 1
+  historyLimitReplicas: 0
+  resources:
+    requests:
+      cpu: 100m
+    limits:
+      cpu: 250m
+
+  service:
+    name: backend
+    data:
+      type: Internal
+      port: 8080
+      protocol: TCP
+      target_port: 8080
+      name: http

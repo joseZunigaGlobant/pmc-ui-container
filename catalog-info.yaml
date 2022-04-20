@@ -1,0 +1,12 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: ${{values.name | dump}}
+  description: ${{values.description | dump}}
+  tags:
+    - react
+spec:
+  type: service
+  lifecycle: production
+  owner: "GS.IDP.Verticals.${{values.vertical}}"
+  system: "GS.IDP.Verticals.${{values.vertical}}"

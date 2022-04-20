@@ -1,0 +1,92 @@
+#### template ####
+apiVersion: backstage.io/v1beta2
+kind: Template
+metadata:
+  name: node-api
+  title: React Microfrontends Template
+  description: A microfrontends template with module federation
+  links:
+    - url: https://gitlab.com/arquitectura-prisma/arquitectura/global_templates/npm/bondi-template
+      title: Repository
+      icon: dashboard
+  tags:
+    - node
+spec:
+  owner: tiimiit team
+  type: service
+  # these are the steps which are rendered in the frontend with the form input
+  parameters:
+    - title: Application name
+      required:
+        - applicationName
+      properties:
+        applicationName:
+          title: Project name
+          type: string
+          description: The field must be a string in kebabCase format
+        appDescription:
+          title: Project description
+          type: string
+          description: A brief description of the project
+    - title: Project location
+      properties:
+        vertical:
+          title: vertical
+          type: string
+          description: Select the vertical
+          ui:field: VerticalSelect
+  steps:
+    - id: fetch-base
+      name: Fetch Base
+      action: fetch:template
+      input:
+        url: ./
+        values:
+          name: "{{ parameters.applicationName }}"
+          description: "{{parameters.appDescription}}"
+          owner: "{{ parameters.owner }}"
+          vertical: "{{ parameters.vertical }}"
+
+    - id: publish
+      name: Publish
+      action: publish:gitlab
+      input:
+        allowedHosts: ["gitlab.com"]
+        description: "This is {{ parameters.applicationName }}"
+        repoUrl: "gitlab.com?owner=arquitectura-prisma%2F{{ parameters.vertical }}%2Fprojects&repo={{ parameters.applicationName }}"
+
+    - id: ci-setup
+      name: CI setup
+      action: ci:setup
+      input:
+        applicationName: "{{ parameters.applicationName }}"
+        ciPathUrl: ".npm-gitlab-ci.yml@arquitectura-prisma/{{ parameters.vertical }}/ci-cd"
+        envVars:
+          - "AWS_REGION"
+          - "AWS_ACCESS_KEY_ID"
+          - "ECR_URL"
+          - "AWS_SECRET_ACCESS_KEY"
+          - "ARTIFACT_ASSETS_PATH"
+          - "GITLAB_TOKEN"
+        vertical: "{{ parameters.vertical }}"
+    - id: cd-setup
+      name: CD setup
+      action: cd:setup
+      input:
+        applicationName: "{{ parameters.applicationName }}"
+        owner: "{{ parameters.owner }}"
+        repoUrl: "{{ steps.publish.output.remoteUrl }}"
+        namespace: "backend"
+        vertical: "{{ parameters.vertical }}"
+
+    - id: register
+      name: Register
+      action: catalog:register
+      input:
+        repoContentsUrl: "{{ steps.publish.output.repoContentsUrl }}"
+        catalogInfoPath: "/catalog-info.yaml"
+
+  # some outputs which are saved along with the job for use in the frontend
+  output:
+    applicationName: "{{ steps.createArgoApp.output.applicationName }}"
+    repoUrl: "{{ steps.publish.output.repoUrl }}"

@@ -1,0 +1,10 @@
+{
+  "extends": "@bondi-js/config/tsconfig.base",
+  "compilerOptions": {
+    "rootDir": "./src",
+    "baseUrl": "./src",
+    "esModuleInterop": true
+  },
+  "include": ["src"],
+  "exclude": ["dist/", "coverage/", "./*.js", "./*.ts", "./cypress"]
+}
