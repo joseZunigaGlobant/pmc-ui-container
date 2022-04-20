@@ -79,7 +79,8 @@ Yes you can! Check the directory [`./mocks`](./mocks) and the [`MSW documentatio
 
 Tuvimos un problema al levantar debido a la configuracion de Module Federation, especificamente al output, se debe cambiar a:
 
-```output: {
+```
+output: {
   publicPath: 'auto',
   path: path.resolve(\_\_dirname, 'build'),
 },
