@@ -85,3 +85,4 @@ output: {
   path: path.resolve(\_\_dirname, 'build'),
 },
 ```
+TESTR
